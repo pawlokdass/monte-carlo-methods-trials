@@ -1,0 +1,39 @@
+# Date - 21 March 2019
+# Description - Monte Carlo Simulations in R (trying out JourneyOfAnalytics codes)
+
+```{r}
+# Laod library packages:
+library(data.table)
+
+# set global options:
+options(scipen = 999999)   # we don't want to use scientific notation .
+options(digits = 4)   # we want only 2 digits after the decimal.
+
+```
+# Basic Monte Carlo code: 
+```{r}
+runs <- 100000
+sims <- rnorm(runs,mean=4,sd=10)
+mcmc_val <- sum(sims >= 3 & sims <= 6)/runs
+cat(mcmc_val,'\n')
+```
+
+# For a given group of 8th grade male students, the average weight
+# is 160 pounds and the standard deviation is 5.5 pounds. What is the probability
+# that a student weighs over 205 pounds if we were to sample 5000 similar students?
+```{r}
+runs <- 5000
+sims <- rnorm(runs,mean=160,sd=5.5)
+mcmc_val <- sum(sims >= 205)/runs
+cat(mcmc_val)
+```
+# Probability for weight of student >= 165 pounds.
+```{r}
+runs <- 5000
+sims <- rnorm(runs,mean=160,sd=5.5)
+mcmc_val <- sum(sims >= 165)/runs
+cat(mcmc_val)
+```
+
+
+
