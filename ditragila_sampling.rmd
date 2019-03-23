@@ -1,4 +1,73 @@
 # Example 1
 ```{r}
+marbles = c('red', 'blue', 'green')
+sample(x = marbles, size = 2, replace = F)
+```
+
+```{r}
+sample(x = 1:10, size = 5, replace = FALSE)
+numbers = 1:10
+sample(x = numbers, size = 20, replace = TRUE)
+```
+
+#Ex1. I’m running a prize drawing and need to select two different students from Econ 103 at random.
+```{r}
+students = c("Alice", "Bob", "Charlotte", "Dan", "Emily")
+sample(x = students, size = 2, replace = FALSE) 
+```
+
+#Ex2. Jim is bored and loves to solve math problems for fun. (He’s a strange guy.) To pass the time, he labels ten cards with the numbers 1 through 10 and puts them in a bowl. He then draws five of these cards with replacement and calculates their sum. Use R to replicate one of Jim’s “random sums.”
+```{r}
+random.numbers = sample(x = 1:10, size = 5, replace = TRUE)
+sum(random.numbers)
+```
+
+#Ex3. roll two fair, six-sided dice and compute their sum?
+```{r}
+sample(1:6, size = 1, replace = TRUE) + sample(1:6, size = 1, replace = TRUE)
+
+#But it turns out that there’s a much easier way:
+dice.roll <- sample(1:6, size = 2, replace = TRUE)
+dice.roll
+sum(dice.roll)
+
+#or, in a single command:
+sum(sample(1:6, size = 2, replace = TRUE))
+
+#Write R code to roll ten fair, six-sided dice and calculate their sum
+sum(sample(x = 1:6, size = 10, replace = TRUE))
 
 ```
+
+# make a function to roll two fair, six-sided dice and return their sum as follows:
+```{r}
+two.dice <- function(){
+  dice <- sample(1:6, size = 2, replace = TRUE)
+  return(sum(dice))
+}
+
+two.dice()
+```
+
+# To use replicate, we need to specify two arguments: n tells R how many times we want to repeat something and expr is the R command we want to repeat.
+```{r}
+replicate(n = 20, expr = two.dice())
+
+# returning a vector
+replicate(10, sample(1:10, 1, replace = FALSE))
+
+# returning a matrix
+replicate(10, sample(1:10, 5, replace = FALSE))
+```
+
+
+
+
+
+
+
+
+
+
+
+
