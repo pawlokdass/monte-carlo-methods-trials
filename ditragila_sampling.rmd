@@ -60,10 +60,138 @@ replicate(10, sample(1:10, 1, replace = FALSE))
 replicate(10, sample(1:10, 5, replace = FALSE))
 ```
 
+# Now let’s try writing a slightly more general version of the two.dice function so we can see how to use replicate with a function that takes its own arguments. The function dice.sum takes one argument n.dice that specifies how many six-sided dice we will roll and sum:
+```{r}
+dice.sum <- function(n.dice){
+  dice <- sample(1:6, size = n.dice, replace = TRUE)
+  return(sum(dice))
+}
+
+# Using replicate, we can roll three six-sided dice and compute the sum fifty times as follows:
+replicate(50, dice.sum(3))
 
 
+```
+
+# Write an even more general version of the function two.dice called my.dice.sum that takes two arguments:  n.sides tells how many sides each die has and n.dice tells how many dice we roll. For example if n.sides = 4 and n.dice = 3, we’re rolling three four-sided dice, i.e., dice with sides numbered 1-4. Use replicate to simulate the sum of five four-sided dice a total of 100 times.
+
+```{r}
+my.dice.sum <- function(n.dice, n.sides){
+  dice <- sample(1:n.sides, size = n.dice, replace = TRUE)
+  return(sum(dice))
+}
+
+replicate(100, my.dice.sum(5,4))
+```
+
+# Approximating probabilities
+```{r}
+sims <- replicate(100, two.dice())
+table(sims) #This gives us the frequency of every outcome.
+
+# To convert this to relative frequencies, we need to divide by the number of times we carried out the experiment
+table(sims)/length(sims)
+
+plot(table(sims), xlab = 'Sum', ylab = 'Frequency', main = '100 Rolls of 2 Fair Dice')
+
+plot(table(sims)/length(sims), xlab = 'Sum', ylab = 'Relative Frequency', main = '100 Rolls of 2 Fair Dice')
+
+```
+# You might get a table where one of the possible sums doesn’t appear at all or where some of the relative frequencies don’t agree with the calculated probabilities that we know to be true for real dice. This is because probability is defined as long-run relative frequency, and 100 is not enough trials to count as the “long-run.” Let’s try 1000 rolls:
+```{r}
+more.sims <- replicate(1000, two.dice())
+table(more.sims)/length(more.sims)
+
+plot(table(more.sims)/length(more.sims), 
+     xlab = 'Sum', ylab = 'Relative Frequency', main = '1000 Rolls of 2 Fair Dice')
+
+even.more.sims <- replicate(100000, two.dice())
+table(even.more.sims)/length(even.more.sims)
+plot(table(even.more.sims)/length(even.more.sims), 
+     xlab = 'Sum', ylab = 'Relative Frequency', main = '100000 Rolls of 2 Fair Dice')
+```
+# More complicated probabilities
+
+```{r}
+z <- c(12, 6, 3, 7, 10, 9, 3)
+z >= 9
+sum(z >= 9)
+sum(z >= 9)/length(z)
+
+```
+```{r}
+T + T
+F * 6
+
+# The proportion of elements in z that equal 3
+sum(z == 3)/length(z)
+
+# The proportion of elements in  z that are less than 7
+sum(z < 7)/length(z)
+```
+# So, how can we calculate the probability of getting at least a 9 when rolling two dice? We already have the results of a very large number of random dice rolls stored in the vector even.more.sims:
+```{r}
+head(even.more.sims)
+sum(even.more.sims >= 9)/length(even.more.sims)
+
+# Use the same idea to calculate the probability of getting at most 4 when rolling two fair, six-sided dice
+sum(even.more.sims <= 4)/length(even.more.sims)
+
+```
+# AND OR
+```{r}
+# The following expression will be TRUE for each element of  z that is between 7 and 10 inclusive:
+(7 <= z) & (z <= 10)
+sum((7 <= z) & (z <= 10))/length(z) # proportion
+
+# To calculate the proportion of elements in z that are either greater than 10 or less than 7, we use | as follows:
+sum((z > 10) | (z < 7))/length(z)
+
+# Using this idea, we can calculate the probability of getting a sum between 6 and 8 inclusive
+sum((6 <= even.more.sims) & (even.more.sims <= 8))/length(even.more.sims)
+
+# and sum below 6 or above 8, exclusive as follows
+sum((even.more.sims < 6) | (even.more.sims > 8))/length(even.more.sims)
 
 
+```
+# Ex 7: There is an old Italian gambling game called Passadieci, in which the goal is to get at least 11 when three fair, six-sided dice are thrown. The game was famously studied by Galileo at the behest of the Grand Duke of Tuscany, making it one of the earliest examples of the rigorous study of probability theory. Using your function my.dice.sum from above and replicate, simulate 100,000 replications of this game and store them in a vector called passadieci. Use it to answer the following questions: 1. What is the probability of winning the game? 2. Which is more likely when throwing three dice: an 11 or a 12? 3. What is the probability of getting a sum no greater than 7 or no less then 15 when throwing three dice? 4. Make a plot of the simulated probabilities of each possible sum when throwing three fair, six-sided dice.
+
+```{r}
+passadieci <- replicate(1000000, my.dice.sum(n.dice = 3, n.sides = 6)) # model simulation
+table(passadieci)/length(passadieci)
+plot(table(passadieci)/length(passadieci), xlab='Sum', ylab='Relative frequency', main = '100000 Rolls of 3 Fair Dice') # Q4
+```
+```{r}
+sum(passadieci >= 11)/length(passadieci) # Q1
+
+sum(passadieci == 11)/length(passadieci) # Q2
+sum(passadieci == 12)/length(passadieci)
+
+sum((passadieci <= 7) | (passadieci >= 15))/length(passadieci) # Q3
+```
+# Ex 8: Which is more likely: (A) getting at least one 6 when rolling a single fair six-sided die 4 times or (B) getting at least one pair of sixes when two fair, six-sided dice are thrown 24 times.
+```{r}
+ExptA <- function(){
+  rolls <- sample(1:6, size=4, replace=T)
+  condition <- sum(rolls == 6) > 0
+  return(condition)
+}
+
+ExptB <- function(){
+  first.die <- sample(1:6, size=24, replace=T)
+  second.die <- sample(1:6, size=24, replace=T)
+  condition <- sum((first.die == second.die) & (first.die == 6)) > 0
+  return(condition)
+}
+
+simsA <- replicate(100000, ExptA())
+sum(simsA)/length(simsA)
+
+simsB <- replicate(100000, ExptB())
+sum(simsB)/length(simsB)
+
+```
 
 
 

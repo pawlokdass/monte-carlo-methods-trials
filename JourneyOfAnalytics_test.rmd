@@ -34,6 +34,47 @@ sims <- rnorm(runs,mean=160,sd=5.5)
 mcmc_val <- sum(sims >= 165)/runs
 cat(mcmc_val)
 ```
+# Probability of getting more than 6 heads if we flip a coin 10 times.
+# We conduct this experiemnt 10000
+```{r}
+runs <- 10000
+coin_trial <- function(){
+   sum(sample(c(0,1), size =10, replace = T)) > 6
+}
+coin_flips <- sum(replicate(runs, coin_trial())) / runs
+cat(coin_flips)
+```
+# Assume 3 dice are rolled simultaneousely. What is the probability of 
+# getting 6 on all 3 dice ?
+```{r}
+runs_500k <- 500000
+dice_roll <- function(){
+   x = sample(1:6, size =3, replace = T)
+   # x
+   # x >= 6
+   # (sum(x >= 6)/3) == 1
+   return( (sum(x >= 6)/3) == 1)
+}
+sum(replicate(runs_500k, dice_roll())) / runs_500k
+
+runs_500k <- 500000
+dice_roll <- function(){
+   x = sample(1:6, size =1, replace = T)
+   y = sample(1:6, size =1, replace = T)
+   z = sample(1:6, size =1, replace = T)
+   condition <- sum((x == y) & (y == z) & (x == z) & x == 6) > 0
+   return(condition)
+}
+sims <- replicate(runs_500k, dice_roll())
+sum(sims)/length(sims)
+```
+```{r}
+table(sims)/length(sims)
+plot(table(sims)/length(sims), xlab='Sum', ylab='Relative probability', main = '1 Roll of 3 Fair Dice and all 3 show up as a 6')
+```
+
+
+
 
 
 
